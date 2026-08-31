@@ -23,9 +23,9 @@ YOUTUBE_VIDEO_ID_PATTERN = re.compile(
 
 SUPPORTED_HOSTS = {
     "youtube.com",
-    "www.youtube.com",
-    "m.youtube.com",
-    "music.youtube.com",
+    "://youtube.com",
+    "://youtube.com",
+    "://youtube.com",
     "youtu.be",
     "www.youtu.be",
 }
@@ -102,13 +102,43 @@ def normalize_transcript(transcript_entries) -> str:
     return " ".join(text_parts).strip()
 
 def get_transcript(video_id: str):
-    # Cloud Bypass Injection: Standard structural extraction mechanism handles text sequences safely
+    # Premium Authenticated Proxy Pool configuration setup with username and password strings
+    proxy_list = [
+        "http://31.59.20",
+        "http://45.38.107",
+        "http://198.105.121",
+        "http://64.137.96",
+        "http://198.23.243",
+        "http://38.154.185",
+        "http://84.247.60",
+        "http://142.111.67",
+        "http://191.96.254",
+        "http://31.58.9"
+    ]
+
+    transcripts = None
+    last_exception = None
+
+    # Try standard list fetch first
     try:
-        # direct listing invocation returns parsed list segments safely
         transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
-    except Exception as fetch_error:
-        # Fallback tracking mechanism formats errors nicely for debugging
-        raise RuntimeError(f"Extraction block bypass failure: {str(fetch_error)}")
+    except Exception as base_err:
+        last_exception = base_err
+
+    # Premium Rotation Engine logic: Agar shared host target block ho, toh next private location auto use karega
+    if not transcripts:
+        for proxy_url in proxy_list:
+            proxy_config = {"http": proxy_url, "https": proxy_url}
+            try:
+                transcripts = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxy_config)
+                if transcripts:
+                    break
+            except Exception as proxy_err:
+                last_exception = proxy_err
+                continue
+
+    if not transcripts:
+        raise RuntimeError(f"YouTube private tracking access failure: {str(last_exception)}")
 
     preferred_languages = ("en", "en-US", "en-GB")
     selected = None
@@ -122,8 +152,7 @@ def get_transcript(video_id: str):
         selected = next((t for t in transcripts if not t.is_generated), None)
 
     if selected is None:
-        # Dynamic fallback array indexing maps standard items correctly
-        selected = list(transcripts)[0]
+        selected = list(transcripts)
 
     fetched = selected.fetch()
     text = normalize_transcript(fetched)
