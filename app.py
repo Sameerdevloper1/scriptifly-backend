@@ -177,5 +177,11 @@ def internal_server_error(_error):
     return jsonify({"success": False, "error": "Internal server error."}), 500
 
 # Vercel serverless deployment handler logic compatibility setup
+app.debug = False
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=False)
+    app.run(
+        host="0.0.0.0",
+        port=5001,
+        debug=False
+    )

@@ -1,15 +1,14 @@
 {
-  "version": 2,
   "builds": [
     {
       "src": "app.py",
       "use": "@vercel/python"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/app.py"
+      "src": "/(.*)",
+      "dest": "app.py"
     }
   ]
 }
