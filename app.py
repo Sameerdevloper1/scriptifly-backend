@@ -183,5 +183,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5001,
-        debug=False
+        debug=False # Isko False hi rehne dein taaki laptop smoothly chale
     )
