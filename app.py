@@ -102,43 +102,22 @@ def normalize_transcript(transcript_entries) -> str:
     return " ".join(text_parts).strip()
 
 def get_transcript(video_id: str):
-    # Premium Authenticated Proxy Pool configuration setup with username and password strings
-    proxy_list = [
-        "http://31.59.20",
-        "http://45.38.107",
-        "http://198.105.121",
-        "http://64.137.96",
-        "http://198.23.243",
-        "http://38.154.185",
-        "http://84.247.60",
-        "http://142.111.67",
-        "http://191.96.254",
-        "http://31.58.9"
-    ]
+    # Professional Verification Override Layer
+    # Browser user-agent session setup parameters handle target handshake smoothly
+    import os
+    cookies_path = "cookies.txt" if os.path.exists("cookies.txt") else None
 
-    transcripts = None
-    last_exception = None
-
-    # Try standard list fetch first
     try:
-        transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
-    except Exception as base_err:
-        last_exception = base_err
-
-    # Premium Rotation Engine logic: Agar shared host target block ho, toh next private location auto use karega
-    if not transcripts:
-        for proxy_url in proxy_list:
-            proxy_config = {"http": proxy_url, "https": proxy_url}
-            try:
-                transcripts = YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxy_config)
-                if transcripts:
-                    break
-            except Exception as proxy_err:
-                last_exception = proxy_err
-                continue
+        if cookies_path:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, cookies=cookies_path)
+        else:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        transcripts = list(transcript_list)
+    except Exception as api_err:
+        raise RuntimeError(f"YouTube block validation failed: {str(api_err)}")
 
     if not transcripts:
-        raise RuntimeError(f"YouTube private tracking access failure: {str(last_exception)}")
+        raise RuntimeError("No transcript is available for this video.")
 
     preferred_languages = ("en", "en-US", "en-GB")
     selected = None
@@ -152,7 +131,7 @@ def get_transcript(video_id: str):
         selected = next((t for t in transcripts if not t.is_generated), None)
 
     if selected is None:
-        selected = list(transcripts)
+        selected = transcripts[0]
 
     fetched = selected.fetch()
     text = normalize_transcript(fetched)
@@ -195,23 +174,5 @@ def transcript():
             "error": str(exception) if str(exception).strip() else "Unable to retrieve the transcript."
         }), 422
 
-@app.errorhandler(404)
-def not_found(_error):
-    return jsonify({"success": False, "error": "Endpoint not found."}), 404
-
-@app.errorhandler(405)
-def method_not_allowed(_error):
-    return jsonify({"success": False, "error": "HTTP method not allowed."}), 405
-
-@app.errorhandler(500)
-def internal_server_error(_error):
-    return jsonify({"success": False, "error": "Internal server error."}), 500
-
-app.debug = False
-
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=5001,
-        debug=False
-    )
+    app.run(host="0.0.0.0", port=5001, debug=False)
